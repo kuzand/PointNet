@@ -14,7 +14,7 @@ class _MLPBase(nn.Module):
         Input dimensions (1D, 2D or 3D). Note that the batch dimension is not counted.
     
     layer_sizes: list of ints
-        List of output sizes of for each MLP layer.
+        List of sizes of each MLP layer (the first one is the in_features).
         
     add_bias: None, bool or list of bools
         Flag for adding a bias term to each MLP layer.
@@ -253,18 +253,30 @@ if __name__ == "__main__":
     in_features = 3
     out_features = 13
     x = torch.rand(2, in_features)
-    mlp_1d = MLP1d(layer_sizes=[in_features, 5, out_features], add_bias=False, apply_bn=True, activation_fn=['relu', 'sigmoid'], dropout_probs=[0.6, 0.0])
+    mlp_1d = MLP1d(layer_sizes=[in_features, 5, out_features],
+                   add_bias=False,
+                   apply_bn=True,
+                   activation_fn=['relu', 'sigmoid'],
+                   dropout_probs=[0.6, 0.0])
     # mlp_1d.eval()
     y = mlp_1d(x)
     print(y.shape)
            
     x = torch.rand(2, in_features, 10)
-    mlp_2d = MLP2d(layer_sizes=[in_features, 5, out_features], add_bias=True, apply_bn=False, activation_fn=['relu', 'sigmoid'], dropout_probs=None)
+    mlp_2d = MLP2d(layer_sizes=[in_features, 5, out_features],
+                   add_bias=True,
+                   apply_bn=False,
+                   activation_fn=['relu', 'sigmoid'],
+                   dropout_probs=None)
     y = mlp_2d(x)
     print(y.shape)
 
     x = torch.rand(2, in_features, 4, 4)
-    mlp_3d = MLP3d(layer_sizes=[in_features, 5, out_features], add_bias=False, apply_bn=True, activation_fn=['relu', 'sigmoid'], dropout_probs=[0.6, 0.0])
+    mlp_3d = MLP3d(layer_sizes=[in_features, 5, out_features],
+                   add_bias=False,
+                   apply_bn=True,
+                   activation_fn=['relu', 'sigmoid'],
+                   dropout_probs=[0.6, 0.0])
     y = mlp_3d(x)
     print(y.shape)
     

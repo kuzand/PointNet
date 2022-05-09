@@ -18,8 +18,8 @@ def modelnet_to_hdf5(data_dir, output_path, compression=None, num_points=2048, n
         
     Additionally, we save the class-to-id mapping as an attribute of the .hdf5
     
-    Data can be downloaded from http://3dvision.princeton.edu/projects/2014/3DShapeNets/
-    to the data_dir, structured as follows:
+    Data can be downloaded from https://modelnet.cs.princeton.edu/ to the data_dir,
+    structured as follows:
         data_dir/
         ├── class_0/
         │   ├── test/
