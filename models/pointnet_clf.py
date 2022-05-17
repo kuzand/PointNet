@@ -14,7 +14,6 @@ from tnet import TNet
 from block import Block
 
 
-
 class PointNetClf(nn.Module):
     """
     Original PointNet for 3D object classification.

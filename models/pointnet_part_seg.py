@@ -50,20 +50,12 @@ class PointNetPartSeg(nn.Module):
         self.agg_fn = nn.AdaptiveMaxPool1d(output_size=1)
         
         # Segmentation part
-        self.block2 = Block(None,
-                            PointMLP(layer_sizes=[1088, 512, 256, 128],
-                                     add_bias=False,
-                                     apply_bn=True,
-                                     activation_fn="relu",
-                                     dropout_probs=None))
+        self.point_mlp = PointMLP(layer_sizes=[1088, 512, 256, 128, 128, num_parts],
+                                  add_bias=False,
+                                  apply_bn=True,
+                                  activation_fn="relu",
+                                  dropout_probs=None)
 
-        self.block3 = Block(None,
-                            PointMLP(layer_sizes=[128, 128, num_parts],
-                                     add_bias=False,
-                                     apply_bn=True,
-                                     activation_fn="relu",
-                                     dropout_probs=None))
-        
         
     def forward(self, x):
         """
@@ -104,16 +96,11 @@ class PointNetPartSeg(nn.Module):
         # Concatenate local and global information
         x_concat = torch.concat([x_t_1, global_feat], dim=1)  # (batch_size, 1088, num_points)
         
-        # Block 2
-        t_2, x_t_2, y_2 = self.block2(x_concat)
-        y_out_2 = y_2[-1]  # (batch_size, 128, num_points)
-        
-        # Block 3
-        t_3, x_t_3, y_3 = self.block3(y_out_2)
-        y_out_3 = y_3[-1]
+        # Point MLP
+        y_out = self.point_mlp(x_concat)[-1]  # (batch_size, 128, num_points)
         
         # Compute log-probabilities
-        y = F.log_softmax(y_out_3, dim=1)  # (batch_size, num_parts, num_points)
+        y = F.log_softmax(y_out, dim=1)  # (batch_size, num_parts, num_points)
         
         return y, t_0, t_1
        
