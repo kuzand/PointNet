@@ -9,7 +9,7 @@ if module_path not in map(Path, sys.path):
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mlp import MLP2d
+from mlp import PointMLP
 from tnet import TNet
 from block import Block
 
@@ -30,39 +30,39 @@ class PointNetPartSeg(nn.Module):
         
         # Classification part
         self.block0 = Block(TNet(in_features=self.in_features,
-                                 mat_size=3,
+                                 t_size=3,
                                  agg_fn="max"),
-                            MLP2d(layer_sizes=[self.in_features, 64, 64],
-                                  add_bias=False,
-                                  apply_bn=True,
-                                  activation_fn="relu",
-                                  dropout_probs=None))
+                            PointMLP(layer_sizes=[self.in_features, 64, 64],
+                                     add_bias=False,
+                                     apply_bn=True,
+                                     activation_fn="relu",
+                                     dropout_probs=None))
         
         self.block1 = Block(TNet(in_features=64,
-                                 mat_size=64,
+                                 t_size=64,
                                  agg_fn="max"),
-                            MLP2d(layer_sizes=[64, 64, 128, 1024],
-                                  add_bias=False,
-                                  apply_bn=True,
-                                  activation_fn="relu",
-                                  dropout_probs=None))
+                            PointMLP(layer_sizes=[64, 64, 128, 1024],
+                                     add_bias=False,
+                                     apply_bn=True,
+                                     activation_fn="relu",
+                                     dropout_probs=None))
         
         self.agg_fn = nn.AdaptiveMaxPool1d(output_size=1)
         
         # Segmentation part
         self.block2 = Block(None,
-                            MLP2d(layer_sizes=[1088, 512, 256, 128],
-                                  add_bias=False,
-                                  apply_bn=True,
-                                  activation_fn="relu",
-                                  dropout_probs=None))
+                            PointMLP(layer_sizes=[1088, 512, 256, 128],
+                                     add_bias=False,
+                                     apply_bn=True,
+                                     activation_fn="relu",
+                                     dropout_probs=None))
 
         self.block3 = Block(None,
-                            MLP2d(layer_sizes=[128, 128, num_parts],
-                                  add_bias=False,
-                                  apply_bn=True,
-                                  activation_fn="relu",
-                                  dropout_probs=None))
+                            PointMLP(layer_sizes=[128, 128, num_parts],
+                                     add_bias=False,
+                                     apply_bn=True,
+                                     activation_fn="relu",
+                                     dropout_probs=None))
         
         
     def forward(self, x):
@@ -80,28 +80,42 @@ class PointNetPartSeg(nn.Module):
             Output tensor of shape (batch_size, num_parts, num_points).
             Note that these are log-probabilities for each part per point.
             
-        transform_mat_0 : torch.Tensor
+        t_0 : torch.Tensor
             Transformation matrix of shape (batch_size, 3, 3) from the TNet of the block0.
         
-        transform_mat_1 : torch.Tensor
+        t_1 : torch.Tensor
             Transformation matrix of shape (batch_size, 64, 64) from the TNet of the block1.
         """
         
         num_points = x.shape[2]
         
-        y_0, x_transformed_0, transform_mat_0 = self.block0(x)  # (batch_size, 64, num_points), (batch_size, 3, num_points), (batch_size, 3, 3)
-        y_1, x_transformed_1, transform_mat_1 = self.block1(y_0)  # (batch_size, 1024, num_points), (batch_size, 64, num_points), (batch_size, 64, 64)
+        # Block 0
+        t_0, x_t_0, y_0 = self.block0(x)
+        y_out_0 = y_0[-1]  # (batch_size, 64, num_points)
         
-        global_feat = self.agg_fn(y_1)  # (batch_size, 1024, 1)
+        # Block 1
+        t_1, x_t_1, y_1 = self.block1(y_out_0)
+        y_out_1 = y_1[-1]  # (batch_size, 1024, num_points)
         
-        x_concat = torch.concat([x_transformed_1, global_feat.expand(-1, -1, num_points)], dim=1)  # (batch_size, 1088, num_points)
+        # Global feature vector
+        global_feat = self.agg_fn(y_out_1)  # (batch_size, 1024, 1)
+        global_feat = global_feat.expand(-1, -1, num_points)  # (batch_size, 1024, num_points)
         
-        y_2, _, _ = self.block2(x_concat)  # (batch_size, 128, num_points), None, None
-        y_3, _, _ = self.block3(y_2)  # (batch_size, num_parts, num_points), None, None
+        # Concatenate local and global information
+        x_concat = torch.concat([x_t_1, global_feat], dim=1)  # (batch_size, 1088, num_points)
         
-        y = F.log_softmax(y_3, dim=1)  # (batch_size, num_parts, num_points)
+        # Block 2
+        t_2, x_t_2, y_2 = self.block2(x_concat)
+        y_out_2 = y_2[-1]  # (batch_size, 128, num_points)
         
-        return y, transform_mat_0, transform_mat_1
+        # Block 3
+        t_3, x_t_3, y_3 = self.block3(y_out_2)
+        y_out_3 = y_3[-1]
+        
+        # Compute log-probabilities
+        y = F.log_softmax(y_out_3, dim=1)  # (batch_size, num_parts, num_points)
+        
+        return y, t_0, t_1
        
 
     

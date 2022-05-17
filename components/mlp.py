@@ -211,15 +211,21 @@ class _MLPBase(nn.Module):
 
         Returns
         -------
-        y : torch.Tensor
-            Output tensor of shape same as the input's shape.
+        outputs : list of torch.Tensor
+            List of outputs from all the layers (hidden and output), [y_1, y_2, ..., y_out].
         """
+        
         self._check_input(x)
-        y = self.net(x)
-        return y
+        
+        outputs = []
+        for layer in self.net.children():
+            x = layer(x)
+            outputs.append(x)
+            
+        return outputs
         
 
-class MLP1d(_MLPBase):
+class MLP(_MLPBase):
     """
     Multi Layer Perceptron (MLP) for 1D input of shape (batch_size, in_features).
     """        
@@ -227,8 +233,7 @@ class MLP1d(_MLPBase):
         super().__init__(1, layer_sizes, add_bias, apply_bn, activation_fn, dropout_probs)    
 
 
-# PointMLP
-class MLP2d(_MLPBase):
+class PointMLP(_MLPBase):
     """
     Multi Layer Perceptron (MLP) for 2D input of shape (batch_size, in_features, num_points).
     Applied identically and independently to all the points.
@@ -237,8 +242,7 @@ class MLP2d(_MLPBase):
         super().__init__(2, layer_sizes, add_bias, apply_bn, activation_fn, dropout_probs)
      
 
-# PointGroupMLP
-class MLP3d(_MLPBase):
+class PointGroupMLP(_MLPBase):
     """
     Multi Layer Perceptron (MLP) for 3D input of shape (batch_size, in_features, num_groups, num_group_points).
     Applied identically and independently to all the points of each group.
@@ -253,30 +257,30 @@ if __name__ == "__main__":
     in_features = 3
     out_features = 13
     x = torch.rand(2, in_features)
-    mlp_1d = MLP1d(layer_sizes=[in_features, 5, out_features],
-                   add_bias=False,
-                   apply_bn=True,
-                   activation_fn=['relu', 'sigmoid'],
-                   dropout_probs=[0.6, 0.0])
+    mlp_1d = MLP(layer_sizes=[in_features, 5, 7, out_features],
+                 add_bias=False,
+                 apply_bn=True,
+                 activation_fn=['relu', 'sigmoid', ''],
+                 dropout_probs=[0.2, 0.5, 0.0])
     # mlp_1d.eval()
     y = mlp_1d(x)
-    print(y.shape)
+    print(y[-1].shape)
            
     x = torch.rand(2, in_features, 10)
-    mlp_2d = MLP2d(layer_sizes=[in_features, 5, out_features],
-                   add_bias=True,
-                   apply_bn=False,
-                   activation_fn=['relu', 'sigmoid'],
-                   dropout_probs=None)
+    mlp_2d = PointMLP(layer_sizes=[in_features, 5, out_features],
+                      add_bias=True,
+                      apply_bn=False,
+                      activation_fn=['relu', 'sigmoid'],
+                      dropout_probs=None)
     y = mlp_2d(x)
-    print(y.shape)
+    print(y[-1].shape)
 
     x = torch.rand(2, in_features, 4, 4)
-    mlp_3d = MLP3d(layer_sizes=[in_features, 5, out_features],
-                   add_bias=False,
-                   apply_bn=True,
-                   activation_fn=['relu', 'sigmoid'],
-                   dropout_probs=[0.6, 0.0])
+    mlp_3d = PointGroupMLP(layer_sizes=[in_features, 5, out_features],
+                           add_bias=False,
+                           apply_bn=True,
+                           activation_fn=['relu', 'sigmoid'],
+                           dropout_probs=[0.6, 0.0])
     y = mlp_3d(x)
-    print(y.shape)
+    print(y[-1].shape)
     
