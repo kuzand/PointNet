@@ -124,7 +124,7 @@ class TNet(_TNetBase):
                   activation_fn=["relu", "relu", ""],
                   dropout_probs=None)
         
-        super().__init__(t_size, point_mlp, agg_fn, mlp)
+        super().__init__(t_size=t_size, point_mlp=point_mlp, agg_fn=agg_fn, mlp=mlp)
         
     
  

@@ -56,6 +56,7 @@ class PointNetClf(nn.Module):
                        activation_fn=["relu", "relu", ""],
                        dropout_probs=[0.3, 0.3, 0.0])
         
+        
     def forward(self, x):
         """
         Forward pass.
@@ -78,10 +79,10 @@ class PointNetClf(nn.Module):
             Transformation matrix of shape (batch_size, 64, 64) from the TNet of the block1.
         """
         
-        t_0, x_t_0, y_0 = self.block0(x)
+        t_0, xt_0, y_0 = self.block0(x)
         y_out_0 = y_0[-1]  # (batch_size, 64, num_points)
         
-        t_1, x_t_1, y_1 = self.block1(y_out_0)
+        t_1, xt_1, y_1 = self.block1(y_out_0)
         y_out_1 = y_1[-1]  # (batch_size, 1024, num_points)
         
         global_feat = self.agg_fn(y_out_1).squeeze(dim=-1)  # (batch_size, 1024)
