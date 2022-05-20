@@ -11,8 +11,9 @@ where `x_i` is the i-th point-vector of size `C_in` and `X_in = {x_1, ..., x_n}`
 ```
 PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
 ```
-
-![point_mlp](https://user-images.githubusercontent.com/15230238/169560375-f784ecba-a2d7-4bb9-a70f-6182254b8cc5.svg)
+<p align="center">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169560375-f784ecba-a2d7-4bb9-a70f-6182254b8cc5.svg">
+</p>
 
 We note that in order for a PointNet to arbitrarily approximate any continuous set function, it is required to have a PointMLP with sufficiently large number of neurons (C_out) [1].
 
@@ -22,24 +23,30 @@ The vanilla PointNet thus can be represented as:
 f(X_in) ≈ MLP(MAX(PointMLP(X_in))).
 ```
 
-![vanilla_pointnet](https://user-images.githubusercontent.com/15230238/169559785-45b89b86-e74c-4d0b-85b4-c81d5bbccc33.svg)
+<p align="center">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169559785-45b89b86-e74c-4d0b-85b4-c81d5bbccc33.svg">
+</p>
 
 In addition to the permutation-invariance, it is desirable to have invariance to certain geometric transformations of the point-clouds. TNets...
 
-![tnet](https://user-images.githubusercontent.com/15230238/169561305-f6f60359-42f8-4edf-92e7-f0fcb7e5b076.svg)
+<p align="center">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169561305-f6f60359-42f8-4edf-92e7-f0fcb7e5b076.svg">
+</p>
 
 
 ## Architectures
 
 ### PointNet for classification
 
-![pointnet_clf](https://user-images.githubusercontent.com/15230238/169488087-2fa677f2-7cb3-44eb-857a-d3500f3698a7.svg)
-
+<p align="center">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169488087-2fa677f2-7cb3-44eb-857a-d3500f3698a7.svg">
+</p>
 
 ### PointNet for part segmentation
 
-![pointnet_part_seg](https://user-images.githubusercontent.com/15230238/169488088-47c0bfb2-5c9b-4e0f-b2ff-7f63696e90d2.svg)
-
+<p align="center">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169488088-47c0bfb2-5c9b-4e0f-b2ff-7f63696e90d2.svg">
+</p>
 
 
 ## Dependencies
