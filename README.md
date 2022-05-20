@@ -61,8 +61,9 @@ In parentheses are the versions that were used for creating and testing the code
 
 
 ## Usage
-For training the PointNet for 3D object classification on ModelNet dataset (run within the `applications/classification`):
+For training the PointNet for 3D object classification on ModelNet dataset:
 ```
+cd applications/classification
 python train_clf.py --hdf5_path "dataset.hdf5" --device "cuda" --batch_size_train 32 --num_epochs 100 ...
 ```
 Similarly for evaluation and inference:
