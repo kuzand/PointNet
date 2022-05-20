@@ -14,6 +14,8 @@ PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
 
 ![point_mlp](https://user-images.githubusercontent.com/15230238/169560375-f784ecba-a2d7-4bb9-a70f-6182254b8cc5.svg)
 
+We note that in order for a PointNet to arbitrarily approximate any continuous set function, it is required to have a PointMLP with sufficiently large number of neurons (C_out) [1].
+
 
 The vanilla PointNet thus can be represented as:
 ```
@@ -21,9 +23,6 @@ f(X_in) ≈ MLP(MAX(PointMLP(X_in))).
 ```
 
 ![vanilla_pointnet](https://user-images.githubusercontent.com/15230238/169559785-45b89b86-e74c-4d0b-85b4-c81d5bbccc33.svg)
-
-
-We note that in order for a PointNet to arbitrarily approximate any continuous set function, it is required to have a PointMLP with sufficiently large number of neurons [1].
 
 In addition to the permutation-invariance, it is desirable to have invariance to certain geometric transformations of the point-clouds. TNets...
 
