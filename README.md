@@ -3,11 +3,13 @@ PyTorch implementation of the PointNet [1], a deep neural network that can direc
 
 ## Introduction
 
-PointNet is a neural network with the ability to arbitrarily aproximate any continuous, permutation-invariant (symmetric) function on sets of points (vectors of fixed size). This is achieved by decomposing such a set function f into a continuous function h and a symmetric function g which aggregates information from each point and enforces the permutation-invariance property on f:
+PointNet is a neural network with that can arbitrarily aproximate any uniformly continuous, permutation-invariant (symmetric) function `f` on finite sets of points (point clouds) by decomposing it into:
 ```
-f({x_1, x_n}) ≈ g({h(x_1), ..., h(x_n)})
+f({x_1, x_n}) ≈ (g ∘ POOL)({h(x_1), ..., h(x_n)})
 ```
-where `x_i` is the i-th point-vector of size `C_in` and `X_in = {x_1, ..., x_n}` is a point-cloud of `n` points. The symmetric function g can be also decomposed into `g = γ o AGG` where γ is a continuous function and AGG is a simple symmetric operation such as summation, max-pooling or avg-pooling that aggregates information from the points. The functions γ and h can be approximated by Multilayer-perceptrons (MLPs) which are a combination of fully-connected layers (FCs). Since the MLP for the function h acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
+where `x_i` is the i-th point-vector of size `C_in`, `X_in = {x_1, ..., x_n}` is a point-cloud of cardinality `n`, `h: R^{C_in} -> R^{C_out}` and `g: R^{C_out} -> R^L` are continuous functions, `POOL` is a symmetric pooling operation such as max-pooling or avg-pooling that aggregates information from the points and enforces permutation-invariance on the whole function.
+
+The functions `g` and `h` can be approximated by Multilayer-perceptrons (MLPs) which are a combination of fully-connected layers (FCs). Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
 ```
 PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
 ```
