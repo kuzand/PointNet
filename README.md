@@ -39,13 +39,13 @@ In addition to the permutation-invariance, it is desirable to have invariance to
 ### PointNet for classification
 
 <p align="center">
-  <img align="center" src="https://user-images.githubusercontent.com/15230238/169488087-2fa677f2-7cb3-44eb-857a-d3500f3698a7.svg">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169564557-7b7c9778-071c-49bd-a1dd-2ce9bd43a65e.svg">
 </p>
 
 ### PointNet for part segmentation
 
 <p align="center">
-  <img align="center" src="https://user-images.githubusercontent.com/15230238/169488088-47c0bfb2-5c9b-4e0f-b2ff-7f63696e90d2.svg">
+  <img align="center" src="https://user-images.githubusercontent.com/15230238/169564573-099b8476-be74-4ece-afc0-fa84aa2d2709.svg">
 </p>
 
 
