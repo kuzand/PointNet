@@ -3,13 +3,13 @@ PyTorch implementation of the PointNet [1], a deep neural network that can direc
 
 ## Introduction
 
-PointNet is a neural network with that can arbitrarily aproximate any uniformly continuous, permutation-invariant (symmetric) function `f` on finite sets of points (point clouds) by decomposing it into:
+PointNet is a neural network that can learn to arbitrarily aproximate any uniformly continuous, permutation-invariant (symmetric) function `f` on finite sets of points (point clouds) by decomposing it into:
 ```
 f({x_1, x_n}) ≈ (g ∘ POOL)({h(x_1), ..., h(x_n)})
 ```
-where `x_i` is the i-th point-vector of size `C_in`, `X_in = {x_1, ..., x_n}` is a point-cloud of cardinality `n`, `h: R^{C_in} -> R^{C_out}` and `g: R^{C_out} -> R^L` are continuous functions, `POOL` is a symmetric pooling operation such as max-pooling or avg-pooling that aggregates information from the points and enforces permutation-invariance on the whole function.
+where `x_i` is the i-th point-vector of size `C_in`, `X_in = {x_1, ..., x_n}` is a point-cloud of cardinality `n`, `h: R^{C_in} -> R^{C_out}` and `g: R^{C_out} -> R^L` are continuous functions, `POOL` is a symmetric pooling operation such as max-pooling or avg-pooling that aggregates information from the points and enforces permutation-invariance on the whole function. Note that pooling operations are applied component-wise.
 
-The functions `g` and `h` can be approximated by Multilayer-perceptrons (MLPs) which are a combination of fully-connected layers (FCs). Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
+The continuous functions `g` and `h` can be represented by learnable multi-layer perceptrons (MLPs) -- combination of fully-connected layers (FCs). Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
 ```
 PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
 ```
@@ -17,22 +17,21 @@ PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
   <img align="center" src="https://user-images.githubusercontent.com/15230238/169560375-f784ecba-a2d7-4bb9-a70f-6182254b8cc5.svg">
 </p>
 
-We note that in order for a PointNet to arbitrarily approximate any continuous set function, it is required to have a PointMLP with sufficiently large number of neurons (C_out) [1].
-
-
 The vanilla PointNet thus can be represented as:
 ```
 f(X_in) ≈ MLP(MAX(PointMLP(X_in))).
 ```
-
 <p align="center">
   <img align="center" src="https://user-images.githubusercontent.com/15230238/169559785-45b89b86-e74c-4d0b-85b4-c81d5bbccc33.svg">
 </p>
 
-In addition to the permutation-invariance, it is desirable to have invariance to certain geometric transformations of the point-clouds. TNets...
+We note that in order for a PointNet to be able to arbitrarily approximate any continuous set function, it is required to have a PointMLP with sufficiently large number of output-layer neurons (typically `C_out >= n`).
+
+In addition to the permutation-invariance, it is desirable to have invariance to certain geometric transformations (e.g. rigid transformation) of the point-clouds. TNets...
+We can think of them as 
 
 <p align="center">
-  <img align="center" src="https://user-images.githubusercontent.com/15230238/169561305-f6f60359-42f8-4edf-92e7-f0fcb7e5b076.svg">
+  <img align="center" width="578" src="https://user-images.githubusercontent.com/15230238/169561305-f6f60359-42f8-4edf-92e7-f0fcb7e5b076.svg">
 </p>
 
 
@@ -46,13 +45,14 @@ In addition to the permutation-invariance, it is desirable to have invariance to
 
 ### PointNet for part segmentation
 
+Note that this network is permutation-equivariant and not permutation-invariant as the PointNet for classification.
+
 <p align="center">
   <img align="center" src="https://user-images.githubusercontent.com/15230238/169564573-099b8476-be74-4ece-afc0-fa84aa2d2709.svg">
 </p>
 
 
 ## Dependencies
-- Python 3 (3.8.3)
 - Pytorch (1.10.1)
 - Numpy (1.18.5)
 - Matplotlib (3.4.1)
