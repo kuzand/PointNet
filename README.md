@@ -9,13 +9,15 @@ f({x_1, x_n}) ≈ (g ∘ POOL)({h(x_1), ..., h(x_n)})
 ```
 where `x_i` is the i-th point-vector of size `C_in`, `X_in = {x_1, ..., x_n}` is a point-cloud of cardinality `n`, `h: R^{C_in} -> R^{C_out}` and `g: R^{C_out} -> R^L` are continuous functions, `POOL` is a symmetric pooling operation such as max-pooling or avg-pooling that aggregates information from the points and enforces permutation-invariance on the whole function. Note that pooling operations are applied component-wise.
 
-The continuous functions `g` and `h` can be represented by learnable multi-layer perceptrons (MLPs) -- combination of fully-connected layers (FCs). Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
+The continuous functions `g` and `h` can be represented by learnable multi-layer perceptrons (MLPs) -- combination of fully-connected layers (FCs) followed by non-linearities. Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
 ```
 PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
 ```
 <p align="center">
   <img align="center" src="https://user-images.githubusercontent.com/15230238/169560375-f784ecba-a2d7-4bb9-a70f-6182254b8cc5.svg">
 </p>
+
+Note that PointMLP is permutation-equivariant by construction.
 
 The vanilla PointNet thus can be represented as:
 ```
