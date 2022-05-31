@@ -7,9 +7,9 @@ PointNet is a neural network that can learn to arbitrarily aproximate any unifor
 ```
 f({x_1, x_n}) ≈ (g ∘ POOL)({h(x_1), ..., h(x_n)})
 ```
-where `x_i` is the i-th point-vector of size `C_in`, `X_in = {x_1, ..., x_n}` is a point-cloud of cardinality `n`, `h: R^{C_in} -> R^{C_out}` and `g: R^{C_out} -> R^L` are continuous functions, `POOL` is a symmetric pooling operation such as max-pooling or avg-pooling that aggregates information from the points and enforces permutation-invariance on the whole function. Note that pooling operations are applied component-wise.
+where `x_i` is the i-th point-vector of size `C_in`, `X_in = {x_1, ..., x_n}` is a point-cloud of cardinality `n`, `h: R^{C_in} -> R^{C_out}` and `g: R^{C_out} -> R^L` are some continuous functions, `POOL` is a symmetric pooling operation such as max-pooling or avg-pooling that aggregates information from the points and enforces permutation-invariance of the whole function f. Note that pooling operations are applied component-wise.
 
-The continuous functions `g` and `h` can be represented by learnable multi-layer perceptrons (MLPs) -- combination of fully-connected layers (FCs) followed by non-linearities. Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
+The continuous functions `g` and `h` can be approximated by Multi-layer perceptrons (MLPs) -- combination of fully-connected layers (FCs) followed by non-linearities. Since the MLP for the function `h` acts on all the points of a point-cloud identically and independently, we name it as PointMLP:
 ```
 PointMLP({x_1, ..., x_n}) = {MLP(x_1), ..., MLP(x_n)}.
 ```
@@ -30,7 +30,6 @@ f(X_in) ≈ MLP(MAX(PointMLP(X_in))).
 We note that in order for a PointNet to be able to arbitrarily approximate any continuous set function, it is required to have a PointMLP with sufficiently large number of output-layer neurons (typically `C_out >= n`).
 
 In addition to the permutation-invariance, it is desirable to have invariance to certain geometric transformations (e.g. rigid transformation) of the point-clouds. TNets...
-We can think of them as 
 
 <p align="center">
   <img align="center" width="578" src="https://user-images.githubusercontent.com/15230238/169561305-f6f60359-42f8-4edf-92e7-f0fcb7e5b076.svg">
